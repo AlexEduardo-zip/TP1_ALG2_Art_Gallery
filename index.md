@@ -115,12 +115,7 @@ Converte duas listas de valores x e y em uma lista de objetos Ponto.
 ```python
 def converter_para_lista_de_pontos(lista_x, lista_y):
     """ 
-    Args:
-    lista_x (list): Lista de valores x.
-    lista_y (list): Lista de valores y.
-
-    Returns:
-    list: Lista de objetos Ponto.
+    Converte duas listas de valores x e valores y em uma lista de pontos.
     """
     pontos = []
     for x, y in zip(lista_x, lista_y):
@@ -133,46 +128,29 @@ Verifica se um ponto está dentro de um triângulo formado por três vértices.
 ```python
 def dentro_do_triangulo(p, v1, v2, v3):
     """ 
-    Args:
-    p (Ponto): Ponto a ser verificado.
-    v1 (Ponto): Primeiro vértice do triângulo.
-    v2 (Ponto): Segundo vértice do triângulo.
-    v3 (Ponto): Terceiro vértice do triângulo.
-
-    Returns:
-    bool: True se o ponto está dentro do triângulo, False caso contrário.
+    Verifica se o ponto p está dentro do triângulo formado pelos vértices v1, v2 e v3.
     """
     return (v1 - p) * (v2 - v1) <= 0 and (v2 - p) * (v3 - v2) <= 0 and (v3 - p) * (v1 - v3) <= 0
-
 ```
 ## anti_horario
 Verifica se uma lista de pontos está em ordem anti-horári
 ```python
 def anti_horario(pontos):
     """ 
-    Args:
-    pontos (list): Lista de tuplas representando os pontos (x, y).
-
-    Returns:
-    bool: True se os pontos estão em ordem anti-horária, False caso contrário.
+    Verifica se a lista de pontos está em ordem anti-horária.
     """
     y_minimo = pontos[0][1]
     index_minimo = 0
 
-    # Itera sobre a lista de pontos com seus índices
     for i, e in enumerate(pontos):
-        # Verifica se o ponto atual tem o menor valor de y encontrado até agora
         if e[1] < y_minimo:
             y_minimo = e[1]
             index_minimo = i
-        # Se o valor de y for igual ao menor valor encontrado,
-        # verifica se o valor de x é maior para definir o ponto
         elif e[1] == y_minimo:
             if e[0] > pontos[index_minimo][0]:
                 y_minimo = e[1]
                 index_minimo = i
 
-    # Define os pontos a, b, e c para verificar a orientação
     a = pontos[index_minimo]
     a = Ponto(a[0], a[1])
     b = pontos[(index_minimo - 1) % len(pontos)]
@@ -180,7 +158,7 @@ def anti_horario(pontos):
     c = pontos[(index_minimo + 1) % len(pontos)]
     c = Ponto(c[0], c[1])
 
-    # Calcula o produto vetorial para determinar a orientação
+    #  produto vetorial para determinar a orientação
     produto = (a - b) * (c - a)
     return produto > 0
 ```
@@ -192,13 +170,6 @@ class CorteDeOrelhas:
     Computa a triangulação de polígonos pelo método de corte de orelhas.
     """
     def __init__(self, xs, ys):
-        """ 
-        Define variáveis comuns e obtém o resultado da triangulação.
-        
-        Args:
-        xs (list): Lista de coordenadas x dos vértices do polígono.
-        ys (list): Lista de coordenadas y dos vértices do polígono.
-        """
         self._pontos_iniciais = converter_para_lista_de_pontos(xs, ys)
         self.pontos = self._pontos_iniciais.copy()
         self._solucao = []
@@ -217,30 +188,27 @@ class CorteDeOrelhas:
         """ 
         Método auxiliar para verificar se um ponto é uma ponta de orelha.
         """
-        # Definir índices dos vértices do triângulo
         indice_anterior = (indice - 1) % len(self.pontos)
         indice_atual = indice
         indice_proximo = (indice + 1) % len(self.pontos)
 
-        # Calcula os segmentos
         segmento1 = self.pontos[indice_atual] - self.pontos[indice_anterior]
         segmento2 = self.pontos[indice_proximo] - self.pontos[indice_atual]
 
-        # Verifica se há uma curva à esquerda
+        # verifica se há uma curva à esquerda
         if segmento1 * segmento2 < 0:
-            # Define os vértices do triângulo
+            # define os vértices do triângulo
             v1 = self.pontos[indice_anterior]
             v2 = self.pontos[indice_atual]
             v3 = self.pontos[indice_proximo]
 
-            # Verifica se há um ponto dentro do triângulo
+            # verifica se há um ponto dentro do triângulo
             for i in range(len(self.pontos)):
                 if i in [indice_anterior, indice_atual, indice_proximo]:
                     continue
                 if dentro_do_triangulo(p=self.pontos[i], v1=v1, v2=v2, v3=v3):
                     return False
 
-            # Adiciona o triângulo à lista de triângulos
             self.triangulos.append([v1, v2, v3])
             return True
 
@@ -251,28 +219,18 @@ class CorteDeOrelhas:
         """ 
         Controla a remoção de pontos e a lista de soluções.
         
-        Args:
-        idx (int): Índice do ponto a ser processado.
         """
         if self.ponta_de_orelha(idx):
-            self._solucao.append(
-                [
-                    self.pontos[(idx - 1) % len(self.pontos)], 
-                    self.pontos[(idx + 1) % len(self.pontos)]
-                ] 
-            )
+            self._solucao.append([
+                self.pontos[(idx - 1) % len(self.pontos)], 
+                self.pontos[(idx + 1) % len(self.pontos)]
+            ])
             self.pontos.pop(idx)
         else:
             self._solucao.append(None)
             self.indice += 1
 
     def solucao(self):
-        """ 
-        Retorna a solução encontrada.
-        
-        Returns:
-        list: Lista de soluções.
-        """
         return self._solucao
 
     def construir_graficos(self):
@@ -288,12 +246,12 @@ class CorteDeOrelhas:
             pt: i for i, pt in enumerate(self._pontos_iniciais)
         }
 
-        pontos = [(xi, yi, '.b') for xi, yi in zip(self.xs, self.ys)]
+        pontos = [(xi, yi, 'blue') for xi, yi in zip(self.xs, self.ys)]
         segmentos = []
         for i in range(len(pontos)):
             p = pontos[i]
             q = pontos[(i + 1) % len(pontos)]
-            segmentos.append(([p[0], p[1]], [q[0], q[1]], '.b'))
+            segmentos.append(([p[0], p[1]], [q[0], q[1]], 'blue'))
         segmentos = [segmentos]
         pontos = [pontos]
         mensagens = ["Polígono inicial"]
@@ -308,7 +266,7 @@ class CorteDeOrelhas:
             pontos[-1][pt_indice] = (
                 pontos[-1][pt_indice][0],
                 pontos[-1][pt_indice][1],
-                '.r'
+                'red'
             )
             segmentos[-1] = segmentos[-2].copy()
             mensagens.append('Analisando vértice %s ...' % self.pontos[i % len(self.pontos)])
@@ -332,7 +290,7 @@ class CorteDeOrelhas:
                 pontos[-1][pt_indice] = (
                     pontos[-1][pt_indice][0],
                     pontos[-1][pt_indice][1],
-                    '.b'
+                    'blue'
                 )
                 segmentos[-1] = segmentos[-2].copy()
                 mensagens.append('Vértice %s não é uma ponta de orelha' % self.pontos[i % len(self.pontos)])
@@ -340,10 +298,11 @@ class CorteDeOrelhas:
 
         # Constrói um gráfico intermediário mostrando o resultado final da triangulação
         pontos.append(pontos[-1].copy())
-        pontos[-1] = [(e[0], e[1], '.r') for e in pontos[-1]]
+        pontos[-1] = [(e[0], e[1], 'red') for e in pontos[-1]]
         segmentos.append(segmentos[-1].copy())
-        segmentos[-1] = [([e[0][0], e[0][1]], [e[1][0], e[1][1]], '.k') for e in segmentos[-1]]
+        segmentos[-1] = [([e[0][0], e[0][1]], [e[1][0], e[1][1]], 'black') for e in segmentos[-1]]
         mensagens.append("Triangulação final")
+
 
         return pontos, segmentos, mensagens
 ```
@@ -358,8 +317,6 @@ class ArvoreDeTriangulos:
         """ 
         Constrói a matriz de adjacência e inicia todos os vértices com a mesma cor no passo 0.
         
-        Args:
-        triangulos (list): Lista de triângulos, onde cada triângulo é uma lista de três vértices.
         """
         self._triangulos = triangulos
         self._matriz_adjacencia = [[] for e in triangulos]
@@ -381,7 +338,7 @@ class ArvoreDeTriangulos:
                 for e in triangulos[i]: conjunto_vertices.add(e)
                 for e in triangulos[j]: conjunto_vertices.add(e)
                 
-                # Se houver dois vértices em comum, devem ser vizinhos
+                # dois vértices em comum devem ser vizinhos
                 if len(conjunto_vertices) == 4:
                     self._matriz_adjacencia[i].append(j)
 
@@ -389,8 +346,6 @@ class ArvoreDeTriangulos:
         """ 
         Colore os vértices do triângulo.
         
-        Args:
-        triangulo (list): Lista de vértices do triângulo a ser colorido.
         """
         para_colorir = None
         soma = 0
@@ -404,13 +359,6 @@ class ArvoreDeTriangulos:
             self._cores_vertices[-1][para_colorir] = 6 - soma
 
     def dfs_aux(self, vertice, visitados):
-        """ 
-        Método auxiliar para DFS.
-        
-        Args:
-        vertice (int): Índice do vértice atual.
-        visitados (set): Conjunto de vértices visitados.
-        """
         visitados.add(vertice)
         for vizinho in self._matriz_adjacencia[vertice]:
             if vizinho not in visitados:
@@ -418,16 +366,8 @@ class ArvoreDeTriangulos:
                 self.dfs_aux(vizinho, visitados)
 
     def dfs(self):
-        """ 
-        Núcleo da DFS. Inicia colorindo todos os vértices do primeiro triângulo
-        com cores diferentes.
-        
-        Returns:
-        list: Lista de dicionários de coloração dos vértices em cada passo.
-        """
         visitados = set()
-
-        # Inicia os primeiros vértices com 3 cores diferentes
+        # inicia os primeiros vértices com 3 cores diferentes
         self._cores_vertices.append(self._cores_vertices[-1].copy())
         for i, v in enumerate(self._triangulos[0]):
             self._cores_vertices[-1][v] = i + 1
@@ -436,46 +376,35 @@ class ArvoreDeTriangulos:
         return self._cores_vertices
 ```
 # Funções de Visualização
-## criar_grafico_interativo_com_dado
+## grafico interatico
 Função para criar gráficos usando Plotly.
 
 ```python
-def criar_grafico_interativo_com_dados(pontos_dados, segmentos_linhas, mensagens):
+def grafico_interativo(pontos_dados, segmentos_linhas, mensagens):
     """ 
     Cria um gráfico interativo a partir dos dados fornecidos.
-
-    Args:
-    pontos_dados (list): Lista de listas de pontos com coordenadas e notações de cor.
-    segmentos_linhas (list): Lista de listas de segmentos de linha com coordenadas e notações de cor.
-    mensagens (list): Lista de mensagens detalhando cada passo do algoritmo.
-
-    Returns:
-    fig: Figura do Plotly com o gráfico interativo.
     """
-    # Cria a figura inicial com pontos
     fig = go.Figure()
 
-    # Dados iniciais do gráfico
+    # dados iniciais 
     pontos_iniciais = pontos_dados[0]
     x = [ponto[0] for ponto in pontos_iniciais]
     y = [ponto[1] for ponto in pontos_iniciais]
-    cores = [mapear_cor(ponto[2]) for ponto in pontos_iniciais]
+    cores = [ponto[2] for ponto in pontos_iniciais]  # Supondo que as cores já estão na notação correta
 
-    # Adiciona os pontos iniciais
+    # pontos iniciais
     fig.add_trace(go.Scatter(x=x, y=y, mode='markers', marker=dict(color=cores, size=12)))
 
-    # Configuração dos steps do slider
     passos = []
 
-    # Cada step irá alterar a cor dos pontos e adicionar as linhas correspondentes
+    # cada step altera a cor dos pontos e adiciona as linhas correspondentes
     for i in range(len(pontos_dados)):
-        # Obtém os pontos e cores do step atual
         pontos = pontos_dados[i]
         x = [ponto[0] for ponto in pontos]
         y = [ponto[1] for ponto in pontos]
-        cores = [mapear_cor(ponto[2]) for ponto in pontos]
+        cores = [ponto[2] for ponto in pontos]  # Supondo que as cores já estão na notação correta
 
-        # Define os shapes (linhas) para o step atual
+        # define os shapes (linhas) para o step atual
         formas = []
         for segmento in segmentos_linhas[i]:
             formas.append({
@@ -485,17 +414,17 @@ def criar_grafico_interativo_com_dados(pontos_dados, segmentos_linhas, mensagens
                 'x1': segmento[1][0],
                 'y1': segmento[1][1],
                 'line': {
-                    'color': mapear_cor(segmento[2]),
+                    'color': segmento[2],  # Supondo que as cores dos segmentos já estão corretas
                     'width': 2
                 }
             })
 
-        # Define o step do slider
+        # define o step do slider
         passo = {
             'method': 'update',
             'args': [
-                {'marker.color': [cores]},  # Restyle: Atualiza as cores dos pontos
-                {'shapes': formas},          # Relayout: Atualiza os shapes (linhas)
+                {'marker.color': [cores]},  # Restyle: atualiza as cores dos pontos
+                {'shapes': formas},          # Relayout: atualiza os shapes (linhas)
                 {'annotations': [dict(
                     xref='paper',
                     yref='paper',
@@ -505,23 +434,24 @@ def criar_grafico_interativo_com_dados(pontos_dados, segmentos_linhas, mensagens
                     yanchor='top',
                     text=mensagens[i],
                     showarrow=True
-                )]}  # Atualiza a mensagem
+                )]}  # atualiza a mensagem
             ],
             'label': mensagens[i]
         }
 
         passos.append(passo)
 
-    # Adiciona o slider ao layout da figura
     fig.update_layout(
         sliders=[{
-            'active': 0,  # Step ativo no início
-            'currentvalue': {'prefix': 'Passo: '},  # Prefixo exibido com o valor atual do slider
-            'pad': {"t": 50},  # Padding no topo
-            'steps': passos  # Passa a lista de steps configurada acima
+            'active': 0,  # step ativo no início
+            'currentvalue': {'prefix': 'Passo: '},  # prefixo exibido com o valor atual do slider
+            'pad': {"t": 50}, 
+            'steps': passos  # passa a lista de steps configurada acima
         }],
-        showlegend=False  # Oculta a legenda
+        showlegend=False 
     )
+
+    fig.write_html("coloring.html")
 
     return fig
 ```
@@ -531,36 +461,25 @@ Envolve a solução para o problema de coloração de galeria usando a triangula
 ```python
 def solucionador(points):
     """ 
-    
-    
-    Args:
-    points (list): Lista de pontos que representam o polígono.
-
-    Returns:
-    None
+    Solução para o problema de coloração de galeria usando a triangulação e coloração 3-cromática.
     """
-    # Verifica se os pontos estão em ordem anti-horária
+    # verifica se os pontos estão em ordem anti-horária
     if anti_horario(points):
         points = points[::-1]
     
-    # Extrai as coordenadas x e y dos pontos
+    # extrai as coordenadas x e y dos pontos
     xs = [e[0] for e in points]
     ys = [e[1] for e in points]
 
-    # Inicializa o algoritmo de recorte de orelhas
     ear_clipper = CorteDeOrelhas(xs, ys)
-    # Obtém os passos do algoritmo
     pontos, segmentos, mensagens = ear_clipper.construir_graficos()
 
-    # Obtém os triângulos resultantes da triangulação
+    # triângulos resultantes da triangulação
     triangulos = ear_clipper.triangulos
     resultado_tres_cores = ArvoreDeTriangulos(triangulos).dfs()
 
-    pontos_tres_cores = []
-    segmentos_tres_cores = []
-
-    # Mapa de cores para a coloração 3-cromática
-    mapa_cores = {0: '.b', 1: '.k', 2: '.y', 3: '.m'}
+    # mapa de cores para a coloração 3-cromática
+    mapa_cores = {0: 'blue', 1: 'black', 2: 'yellow', 3: 'magenta'}
 
     """ 
     Gera uma lista de pontos e suas cores para o passo de coloração 3-cromática 
@@ -580,14 +499,14 @@ def solucionador(points):
     
     mensagens[-1] = "Concluído. O número mínimo de câmeras nesta galeria é %d" % min(qt.values())
 
-    criar_grafico_interativo_com_dados(pontos, segmentos, mensagens).show()
+    grafico_interativo(pontos, segmentos, mensagens).show()
 ```
 
 # Exemplo: (veja mais na implementação no diretorio do GitHub)
 
 ```python
 input = [
-(3,4), 
+(3,4),
 (2,2), 
 (3.5025,1.02125), 
 (3.8025,2.64125), 
