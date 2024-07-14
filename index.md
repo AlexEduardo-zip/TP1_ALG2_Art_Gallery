@@ -203,10 +203,134 @@ class CortadorDeOrelhas:
 
         return pontos, segmentos, mensagens
 ```
+### Classe ArvoreDeTriangulos
+A classe 'ArvoreDeTriangulos' implementa um grafo com triângulos para obter uma coloração 3-cromática.
+```python
+class ArvoreDeTriangulos:
+    def __init__(self, triangulos):
+        self._triangulos = triangulos
+        self._matriz = defaultdict(set)
+        self.criar_arestas()
 
-```html
-<iframe src="coloring.html" width="600" height="400"></iframe>
+    def criar_arestas(self):
+        for t in self._triangulos:
+            for i in range(3):
+                self._matriz[t[i]].add(t[(i+1) % 3])
+                self._matriz[t[i]].add(t[(i+2) % 3])
+
+    def colorir(self):
+        cores = {}
+        for t in self._triangulos:
+            cores_possiveis = {0, 1, 2}
+            for i in range(3):
+                if t[i] in cores:
+                    cores_possiveis.discard(cores[t[i]])
+            cor_usada = cores_possiveis.pop()
+            for i in range(3):
+                if t[i] not in cores:
+                    cores[t[i]] = cor_usada
+        return cores
+
+    def __str__(self):
+        return str(dict(self._matriz))
+
+```
+### Funções de Visualização
+## plotar_graficos
+Função para criar gráficos usando Plotly.
+
+```python
+def plotar_graficos(pontos, segmentos, mensagens):
+    frames = []
+
+    for i in range(len(pontos)):
+        scatter = [
+            go.Scatter(x=[p[0] for p in pontos[i]], y=[p[1] for p in pontos[i]],
+                       mode='markers', marker=dict(color=[p[2] for p in pontos[i]]))
+        ]
+
+        lines = [
+            go.Scatter(x=[e[0][0], e[1][0]], y=[e[0][1], e[1][1]],
+                       mode='lines', line=dict(color=e[2]))
+            for e in segmentos[i]
+        ]
+
+        frames.append(go.Frame(data=scatter + lines, name=str(i), layout=go.Layout(title=mensagens[i])))
+
+    fig = go.Figure(
+        data=frames[0].data,
+        layout=go.Layout(
+            updatemenus=[
+                {
+                    "buttons": [
+                        {
+                            "args": [None, {"frame": {"duration": 500, "redraw": True}, "fromcurrent": True}],
+                            "label": "Play",
+                            "method": "animate",
+                        },
+                        {
+                            "args": [[None], {"frame": {"duration": 0, "redraw": True}, "mode": "immediate",
+                                              "transition": {"duration": 0}}],
+                            "label": "Pause",
+                            "method": "animate",
+                        },
+                    ],
+                    "direction": "left",
+                    "pad": {"r": 10, "t": 87},
+                    "showactive": False,
+                    "type": "buttons",
+                    "x": 0.1,
+                    "xanchor": "right",
+                    "y": 0,
+                    "yanchor": "top",
+                }
+            ],
+            sliders=[{
+                "yanchor": "top",
+                "xanchor": "left",
+                "currentvalue": {
+                    "font": {"size": 20},
+                    "prefix": "Passo:",
+                    "visible": True,
+                    "xanchor": "right"
+                },
+                "transition": {"duration": 500},
+                "pad": {"b": 10, "t": 50},
+                "len": 0.9,
+                "x": 0.1,
+                "y": 0,
+                "steps": [
+                    {"args": [[k], {"frame": {"duration": 500, "redraw": True}, "mode": "immediate",
+                                    "transition": {"duration": 500}}],
+                     "label": str(k), "method": "animate"}
+                    for k in range(len(frames))
+                ]
+            }]
+        ),
+        frames=frames
+    )
+
+    fig.show()
+```
+Exemplo 1:
+
+```python
+input_ = [(-4,0), (-3,1), (-3, 10), (-1, 6), (0, 6), (2,4), (3,5), (4,0),(1,2), (0,-2)]
+solucionador(input_)
 ```
 {% raw %}
 <iframe src="coloring.html" width="600" height="400"></iframe>
 {% endraw %}
+
+```python
+
+```
+
+```python
+
+```
+
+```html
+<iframe src="coloring.html" width="600" height="400"></iframe>
+```
+
