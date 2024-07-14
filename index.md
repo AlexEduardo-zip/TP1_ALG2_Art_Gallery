@@ -207,3 +207,6 @@ class CortadorDeOrelhas:
 ```html
 <iframe src="coloring.html" width="600" height="400"></iframe>
 ```
+{% raw %}
+<iframe src="coloring.html" width="600" height="400"></iframe>
+{% endraw %}
