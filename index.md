@@ -17,16 +17,13 @@ A classe `Ponto` representa um ponto em um plano cartesiano com coordenadas x e 
 ```python
 class Ponto:
     """ 
-    Classe auxiliar para trabalhar com pontos. 
-    Esta classe representa um ponto em um plano cartesiano com coordenadas x e y.
+    Classe para trabalhar com pontos. 
+    Representa um ponto em um plano cartesiano com coordenadas x e y.
+    
     """
     def __init__(self, x, y):
         """
         Inicializa um ponto com coordenadas x e y.
-
-        Args:
-        x (float): Coordenada x do ponto.
-        y (float): Coordenada y do ponto.
         """
         self.x = x
         self.y = y
@@ -34,78 +31,45 @@ class Ponto:
     def __add__(self, outro):
         """
         Soma as coordenadas de dois pontos.
-
-        Args:
-        outro (Ponto): Outro ponto a ser somado.
-
-        Returns:
-        Ponto: Um novo ponto resultante da soma das coordenadas.
+        outro: outro ponto
         """
         return Ponto(self.x + outro.x, self.y + outro.y)
 
     def __sub__(self, outro):
         """
         Subtrai as coordenadas de dois pontos.
-
-        Args:
-        outro (Ponto): Outro ponto a ser subtraído.
-
-        Returns:
-        Ponto: Um novo ponto resultante da subtração das coordenadas.
         """
         return Ponto(self.x - outro.x, self.y - outro.y)
 
     def __mul__(self, outro):
         """
         Calcula o produto vetorial (determinante) de dois pontos.
-
-        Args:
-        outro (Ponto): Outro ponto a ser multiplicado.
-
-        Returns:
-        float: O produto vetorial das coordenadas.
         """
         return self.x * outro.y - outro.x * self.y
     
     def __str__(self):
         """
         Retorna uma string representando o ponto com duas casas decimais.
-
-        Returns:
-        str: A representação do ponto.
         """
         return "(%.2f, %.2f) " % (self.x, self.y)
 
     def __eq__(self, outro):
         """
         Verifica se dois pontos são iguais (mesmas coordenadas).
-
-        Args:
-        outro (Ponto): Outro ponto a ser comparado.
-
-        Returns:
-        bool: True se os pontos são iguais, False caso contrário.
         """
         return self.x == outro.x and self.y == outro.y
 
     def __repr__(self):
         """
         Retorna uma string representando o ponto com duas casas decimais (para uso em listas, por exemplo).
-
-        Returns:
-        str: A representação do ponto.
         """
         return "(%.2f, %.2f) " % (self.x, self.y)
 
     def __hash__(self):
         """
         Retorna o valor hash do ponto, permitindo que ele seja usado em conjuntos e como chave em dicionários.
-
-        Returns:
-        int: O valor hash do ponto.
         """
         return hash((self.x, self.y))
-
 ```
 
 # Funções Auxiliares
